@@ -116,6 +116,7 @@ void create_screen_main() {
                             lv_obj_add_event_cb(obj, event_handler_cb_main_setting_btn, LV_EVENT_ALL, flowState);
                             add_style_button_style(obj);
                             lv_obj_set_style_bg_color(obj, lv_color_hex(0x6a5acd), LV_PART_MAIN | LV_STATE_DEFAULT);
+                            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                             {
                                 lv_obj_t *parent_obj = obj;
                                 {
@@ -185,6 +186,7 @@ void create_screen_settings() {
                     lv_obj_set_pos(obj, 0, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_CHECKED);
                     lv_label_set_text_static(obj, "Settings");
                 }
             }

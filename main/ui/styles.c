@@ -49,7 +49,6 @@ void remove_style_bar_style(lv_obj_t *obj) {
 
 void init_style_button_style_MAIN_DEFAULT(lv_style_t *style) {
     lv_style_set_radius(style, 0);
-    lv_style_set_text_font(style, &lv_font_montserrat_14);
 };
 
 lv_style_t *get_style_button_style_MAIN_DEFAULT() {
