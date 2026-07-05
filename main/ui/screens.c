@@ -109,7 +109,7 @@ void create_screen_main() {
                         lv_obj_t *parent_obj = obj;
                         {
                             // setting_btn
-                            lv_obj_t *obj = lv_button_create(parent_obj);
+                            lv_obj_t *obj = lv_btn_create(parent_obj);
                             objects.setting_btn = obj;
                             lv_obj_set_pos(obj, -483, -510);
                             lv_obj_set_size(obj, 100, 48);
@@ -218,7 +218,7 @@ void create_screen_settings() {
                         lv_obj_t *parent_obj = obj;
                         {
                             // cancel_btn
-                            lv_obj_t *obj = lv_button_create(parent_obj);
+                            lv_obj_t *obj = lv_btn_create(parent_obj);
                             objects.cancel_btn = obj;
                             lv_obj_set_pos(obj, 0, 0);
                             lv_obj_set_size(obj, 110, 48);
@@ -239,7 +239,7 @@ void create_screen_settings() {
                         }
                         {
                             // save_btn
-                            lv_obj_t *obj = lv_button_create(parent_obj);
+                            lv_obj_t *obj = lv_btn_create(parent_obj);
                             objects.save_btn = obj;
                             lv_obj_set_pos(obj, 0, 0);
                             lv_obj_set_size(obj, 110, 48);
@@ -400,9 +400,9 @@ void create_screens() {
 eez_flow_init_fonts(fonts, sizeof(fonts) / sizeof(ext_font_desc_t));
 
 // Set default LVGL theme
-    lv_display_t *dispp = lv_display_get_default();
+    lv_disp_t *dispp = lv_disp_get_default();
     lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
-    lv_display_set_theme(dispp, theme);
+    lv_disp_set_theme(dispp, theme);
     
     // Initialize screens
     eez_flow_init_screen_names(screen_names, sizeof(screen_names) / sizeof(const char *));

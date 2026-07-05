@@ -9,6 +9,13 @@
 #include <esp_log.h>
 
 static const char *TAG="WIFI";
+static const char *ssid;
+static const char *password;
+static const char *bssid;
+static TaskHandle_t mainTask;
+
+enum WIFITASK_STATES {WIFI_INIT=0, WIFI_CONNECTING, WIFI_CONNECTED, WIFI_DISCONNECTED, WIFI_SCANNING};
+uint32_t wifiTaskState;
 
 #define MAXIMUM_RETRY 3
 
@@ -19,6 +26,12 @@ static EventGroupHandle_t wifiEventGroup;
 static int retryCnt;
 wifi_ap_record_t    record;
 uint16_t apNum=32;
+
+void wifiSetupConnection(const char *_ssid, const char *_password, const char *_bssid)  {
+    ssid=_ssid;
+    password=_password;
+    bssid=_bssid;
+}
 
 static void event_handler(void *arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data) {
@@ -60,6 +73,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
 }
 
 void wifiInit(void *args) {
+    mainTask=(TaskHandle_t)args;
     esp_err_t ret=nvs_flash_init();
     if (ret==ESP_ERR_NVS_NO_FREE_PAGES||ret==ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -68,6 +82,7 @@ void wifiInit(void *args) {
     ESP_ERROR_CHECK(ret);
 
     wifiEventGroup=xEventGroupCreate();
+    wifiTaskState=WIFI_INIT;
     ESP_LOGI(TAG, "Netif init");
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -101,6 +116,20 @@ void wifiInit(void *args) {
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
     while (1)   {
+        switch (wifiTaskState)  {
+            case WIFI_INIT:
+            break;
+            case WIFI_CONNECTING:
+            break;
+            case WIFI_CONNECTED:
+            break;
+            case WIFI_DISCONNECTED:
+            break;
+            case WIFI_SCANNING:
+            break;
+            default:
+            break;
+        }
         EventBits_t bits = xEventGroupWaitBits(wifiEventGroup,
                 WIFI_CONNECTED_BIT|WIFI_FAIL_BIT,
                 pdFALSE,
