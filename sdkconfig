@@ -3987,13 +3987,6 @@ CONFIG_WL_SECTOR_SIZE=4096
 # end of Wear Levelling
 
 #
-# ESP LVGL PORT
-#
-# default:
-# CONFIG_LVGL_PORT_ENABLE_PPA is not set
-# end of ESP LVGL PORT
-
-#
 # CMake Utilities
 #
 # default:
@@ -4302,6 +4295,13 @@ CONFIG_ESP_LCD_TOUCH_MAX_POINTS=5
 # default:
 CONFIG_ESP_LCD_TOUCH_MAX_BUTTONS=1
 # end of ESP LCD TOUCH
+
+#
+# ESP LVGL PORT
+#
+# default:
+# CONFIG_LVGL_PORT_ENABLE_PPA is not set
+# end of ESP LVGL PORT
 
 #
 # Wi-Fi Remote

@@ -84,10 +84,18 @@ dependencies:
       type: service
     version: 1.2.0~2
   espressif/esp_lvgl_port:
-    dependencies: []
+    component_hash: fb6c1fdfe70d4ca39a035d63ca394a35f17ec84ce16ff98ecb13a54155d75da4
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.2'
+    - name: lvgl/lvgl
+      registry_url: https://components.espressif.com
+      require: public
+      version: '>=8,<10'
     source:
-      path: components/espressif__esp_lvgl_port
-      type: local
+      registry_url: https://components.espressif.com
+      type: service
     version: 2.8.0~1
   espressif/esp_serial_slave_link:
     component_hash: ac1776806de0a6e371c84e87898bb983e19ce62aa7f1e2e5c4a3b0234a575d2c
@@ -205,6 +213,6 @@ direct_dependencies:
 - idf
 - lvgl/lvgl
 - waveshare/esp32_p4_wifi6_touch_lcd_7b
-manifest_hash: 64ef7793a932d401da94f24d798cb570f371e387f8a352abaa0b5472236d7902
+manifest_hash: 6691df4f2222b9c6061609ce53181d2825f12332f076ba93ba8172e48ac75057
 target: esp32p4
 version: 3.0.0
