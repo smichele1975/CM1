@@ -28,6 +28,7 @@ typedef struct _objects_t {
     lv_obj_t *save_btn;
     lv_obj_t *label_bar_1;
     lv_obj_t *version_label_1;
+    lv_obj_t *brightness_slider;
 } objects_t;
 
 extern objects_t objects;

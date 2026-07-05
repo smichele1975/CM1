@@ -24,7 +24,7 @@ dependencies:
       type: service
     version: 1.1.5
   espressif/esp_codec_dev:
-    component_hash: 896c67360ae1f8dedaf8a53dfe48c015317fa455f061a5165307892296990028
+    component_hash: df70f10af8d7b922add7b9d07372c9c97ab356e58d72b7a892050227c2d44348
     dependencies:
     - name: idf
       require: private
@@ -32,7 +32,7 @@ dependencies:
     source:
       registry_url: https://components.espressif.com
       type: service
-    version: 1.5.10
+    version: 1.5.11
   espressif/esp_hosted:
     component_hash: 59c68fc3a8f25388b9a239ddec5f7bc81e6310d51108db1688e129e791450c31
     dependencies:
@@ -84,18 +84,10 @@ dependencies:
       type: service
     version: 1.2.0~2
   espressif/esp_lvgl_port:
-    component_hash: fb6c1fdfe70d4ca39a035d63ca394a35f17ec84ce16ff98ecb13a54155d75da4
-    dependencies:
-    - name: idf
-      require: private
-      version: '>=5.2'
-    - name: lvgl/lvgl
-      registry_url: https://components.espressif.com
-      require: public
-      version: '>=8,<10'
+    dependencies: []
     source:
-      registry_url: https://components.espressif.com
-      type: service
+      path: components/espressif__esp_lvgl_port
+      type: local
     version: 2.8.0~1
   espressif/esp_serial_slave_link:
     component_hash: ac1776806de0a6e371c84e87898bb983e19ce62aa7f1e2e5c4a3b0234a575d2c
@@ -163,12 +155,12 @@ dependencies:
       type: idf
     version: 6.0.1
   lvgl/lvgl:
-    component_hash: 17e68bfd21f0edf4c3ee838e2273da840bf3930e5dbc3bfa6c1190c3aed41f9f
+    component_hash: d7c1ac037ae6e85d94897f807d6e7ba0946a83e720074fc95a4f6241da9f9f53
     dependencies: []
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
-    version: 9.4.0
+    version: 8.4.0
   waveshare/esp32_p4_wifi6_touch_lcd_7b:
     component_hash: 8bc2e0ad9be5ab11939cf50a6d8abe51594b097365eae7c23dde32286442a39c
     dependencies:
@@ -211,7 +203,8 @@ direct_dependencies:
 - espressif/esp_lcd_ek79007
 - espressif/esp_wifi_remote
 - idf
+- lvgl/lvgl
 - waveshare/esp32_p4_wifi6_touch_lcd_7b
-manifest_hash: a39739c8b00ac1d201d806ffc8f385bbf3d2e11acad8d9b098a498bd4f43f2eb
+manifest_hash: 64ef7793a932d401da94f24d798cb570f371e387f8a352abaa0b5472236d7902
 target: esp32p4
 version: 3.0.0

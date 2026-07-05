@@ -15,5 +15,6 @@
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\smich\\CM1\\build"
   ],
-  "idf.flashType": "JTAG"
+  "idf.flashType": "JTAG",
+  "idf.port": "/dev/ttyACM0"
 }

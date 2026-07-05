@@ -13,7 +13,7 @@
 objects_t objects;
 
 static const char *screen_names[] = { "Main", "Settings" };
-static const char *object_names[] = { "main", "settings", "top_bar", "bottom_bar", "setting_btn", "label_bar", "version_label", "cancel_btn", "save_btn", "label_bar_1", "version_label_1" };
+static const char *object_names[] = { "main", "settings", "top_bar", "bottom_bar", "setting_btn", "label_bar", "version_label", "cancel_btn", "save_btn", "label_bar_1", "version_label_1", "brightness_slider" };
 
 //
 // Event handlers
@@ -54,6 +54,24 @@ static void event_handler_cb_settings_save_btn(lv_event_t *e) {
     }
 }
 
+static void event_handler_cb_settings_brightness_slider(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_VALUE_CHANGED) {
+        lv_obj_t *ta = lv_event_get_target(e);
+        if (tick_value_change_obj != ta) {
+            int32_t value = lv_slider_get_value(ta);
+            assignIntegerProperty(flowState, 18, 3, value, "Failed to assign Value in Slider widget");
+        }
+    }
+    if (event == LV_EVENT_VALUE_CHANGED) {
+        e->user_data = (void *)0;
+        action_change_brightness(e);
+    }
+}
+
 //
 // Screens
 //
@@ -81,8 +99,8 @@ void create_screen_main() {
             // bottom_bar
             lv_obj_t *obj = lv_obj_create(parent_obj);
             objects.bottom_bar = obj;
-            lv_obj_set_pos(obj, 0, 528);
-            lv_obj_set_size(obj, 1024, 48);
+            lv_obj_set_pos(obj, 0, 512);
+            lv_obj_set_size(obj, 1024, 64);
             lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
             lv_obj_set_scroll_dir(obj, LV_DIR_NONE);
             add_style_bar_style(obj);
@@ -115,8 +133,7 @@ void create_screen_main() {
                             lv_obj_set_size(obj, 100, 48);
                             lv_obj_add_event_cb(obj, event_handler_cb_main_setting_btn, LV_EVENT_ALL, flowState);
                             add_style_button_style(obj);
-                            lv_obj_set_style_bg_color(obj, lv_color_hex(0x6a5acd), LV_PART_MAIN | LV_STATE_DEFAULT);
-                            lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
+                            lv_obj_set_style_bg_color(obj, lv_color_hex(0x663399), LV_PART_MAIN | LV_STATE_DEFAULT);
                             {
                                 lv_obj_t *parent_obj = obj;
                                 {
@@ -185,16 +202,16 @@ void create_screen_settings() {
                     lv_obj_t *obj = lv_label_create(parent_obj);
                     lv_obj_set_pos(obj, 0, 0);
                     lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                    lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_text_font(obj, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_CHECKED);
+                    lv_obj_set_style_text_font(obj, &ui_font_coolvetica_24, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_label_set_text_static(obj, "Settings");
                 }
             }
         }
         {
             lv_obj_t *obj = lv_obj_create(parent_obj);
-            lv_obj_set_pos(obj, 0, 528);
-            lv_obj_set_size(obj, 1024, 48);
+            lv_obj_set_pos(obj, 0, 512);
+            lv_obj_set_size(obj, 1024, 64);
             add_style_bar_style(obj);
             {
                 lv_obj_t *parent_obj = obj;
@@ -214,6 +231,8 @@ void create_screen_settings() {
                     lv_obj_set_style_flex_flow(obj, LV_FLEX_FLOW_ROW, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_flex_main_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                     lv_obj_set_style_flex_cross_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_pad_row(obj, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+                    lv_obj_set_style_pad_column(obj, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
                     {
                         lv_obj_t *parent_obj = obj;
                         {
@@ -285,6 +304,79 @@ void create_screen_settings() {
                 }
             }
         }
+        {
+            lv_obj_t *obj = lv_tabview_create(parent_obj, LV_DIR_LEFT, 96);
+            lv_obj_set_pos(obj, 0, 48);
+            lv_obj_set_size(obj, 1024, 464);
+            lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE|LV_OBJ_FLAG_SCROLL_CHAIN_HOR|LV_OBJ_FLAG_SCROLL_CHAIN_VER|LV_OBJ_FLAG_SCROLL_MOMENTUM|LV_OBJ_FLAG_SCROLL_WITH_ARROW);
+            lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+            lv_obj_set_scroll_dir(obj, LV_DIR_NONE);
+            {
+                lv_obj_t *parent_obj = obj;
+                {
+                    lv_obj_t *obj = lv_tabview_get_tab_btns(parent_obj);
+                    add_style_tab_bar_style(obj);
+                }
+                {
+                    lv_obj_t *obj = lv_tabview_get_content(parent_obj);
+                    lv_obj_set_scrollbar_mode(obj, LV_SCROLLBAR_MODE_OFF);
+                    lv_obj_set_scroll_dir(obj, LV_DIR_NONE);
+                    {
+                        lv_obj_t *parent_obj = obj;
+                        {
+                            lv_obj_t *obj = lv_tabview_add_tab(lv_obj_get_parent(parent_obj), "Wifi");
+                        }
+                        {
+                            lv_obj_t *obj = lv_tabview_add_tab(lv_obj_get_parent(parent_obj), "Display");
+                            {
+                                lv_obj_t *parent_obj = obj;
+                                {
+                                    lv_obj_t *obj = lv_obj_create(parent_obj);
+                                    lv_obj_set_pos(obj, 190, 188);
+                                    lv_obj_set_size(obj, 508, 49);
+                                    lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_ITEMS | LV_STATE_CHECKED);
+                                    lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_flex_main_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_flex_cross_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_flex_track_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_column(obj, 30, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    {
+                                        lv_obj_t *parent_obj = obj;
+                                        {
+                                            lv_obj_t *obj = lv_label_create(parent_obj);
+                                            lv_obj_set_pos(obj, 51, 16);
+                                            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                                            lv_obj_set_style_text_font(obj, &ui_font_coolvetica_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_label_set_text_static(obj, "Brightness");
+                                        }
+                                        {
+                                            // brightnessSlider
+                                            lv_obj_t *obj = lv_slider_create(parent_obj);
+                                            objects.brightness_slider = obj;
+                                            lv_obj_set_pos(obj, 171, 17);
+                                            lv_obj_set_size(obj, 257, 16);
+                                            lv_slider_set_range(obj, 20, 100);
+                                            lv_obj_add_event_cb(obj, event_handler_cb_settings_brightness_slider, LV_EVENT_ALL, flowState);
+                                            add_style_slider_style(obj);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        {
+                            lv_obj_t *obj = lv_tabview_add_tab(lv_obj_get_parent(parent_obj), "System");
+                        }
+                    }
+                }
+            }
+        }
     }
     
     tick_screen_settings();
@@ -293,6 +385,15 @@ void create_screen_settings() {
 void tick_screen_settings() {
     void *flowState = getFlowState(0, 1);
     (void)flowState;
+    {
+        int32_t new_val = evalIntegerProperty(flowState, 18, 3, "Failed to evaluate Value in Slider widget");
+        int32_t cur_val = lv_slider_get_value(objects.brightness_slider);
+        if (new_val != cur_val) {
+            tick_value_change_obj = objects.brightness_slider;
+            lv_slider_set_value(objects.brightness_slider, new_val, LV_ANIM_OFF);
+            tick_value_change_obj = NULL;
+        }
+    }
 }
 
 typedef void (*tick_screen_func_t)();
@@ -313,7 +414,7 @@ void tick_screen_by_id(enum ScreensEnum screenId) {
 // Styles
 //
 
-static const char *style_names[] = { "barStyle", "ButtonStyle" };
+static const char *style_names[] = { "barStyle", "ButtonStyle", "tabBarStyle", "sliderStyle" };
 
 extern void add_style(lv_obj_t *obj, int32_t styleIndex);
 extern void remove_style(lv_obj_t *obj, int32_t styleIndex);
@@ -323,6 +424,8 @@ extern void remove_style(lv_obj_t *obj, int32_t styleIndex);
 //
 
 ext_font_desc_t fonts[] = {
+    { "Coolvetica-24", &ui_font_coolvetica_24 },
+    { "Coolvetica-18", &ui_font_coolvetica_18 },
 #if LV_FONT_MONTSERRAT_8
     { "MONTSERRAT_8", &lv_font_montserrat_8 },
 #endif

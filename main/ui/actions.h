@@ -7,6 +7,8 @@
 extern "C" {
 #endif
 
+extern void action_change_brightness(lv_event_t * e);
+
 #ifdef __cplusplus
 }
 #endif
