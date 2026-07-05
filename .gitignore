@@ -65,6 +65,8 @@ env/
 .clangd/
 .ccls-cache/
 compile_commands.json
+settings.json
+c_cpp_properties.json
 
 # Windows specific
 Thumbs.db
