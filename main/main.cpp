@@ -16,12 +16,12 @@ static bsp_display_cfg_t  cfg={
     .double_buffer=1,
     .flags={
         .buff_dma=1,
-        .buff_spiram=1,
+        .buff_spiram=0,
         .sw_rotate=0
     }
 };
 
-esp_hosted_coprocessor_fwver_t  fwVer;
+EventGroupHandle_t mainEvents;
 
 extern "C" void app_main(void) {
     bsp_spiffs_mount();
@@ -32,10 +32,11 @@ extern "C" void app_main(void) {
     bsp_display_unlock();
     xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
     while (1)   {
-        vTaskDelay(pdMS_TO_TICKS(10));
+        xEventGroupWaitBits(&mainEvents, 0xFFFFFFFF, pdFALSE, pdFALSE, 0);
         if (bsp_display_lock(0)) {
             ui_tick();
             bsp_display_unlock();
         }
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 }
