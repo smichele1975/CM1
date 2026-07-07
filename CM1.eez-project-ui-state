@@ -1,6 +1,9 @@
 {
   "navigation": {
-    "subnavigationSelectedItems": {}
+    "selectedUserPageObject": "[CM1.eez-project]:/userPages/1",
+    "subnavigationSelectedItems": {
+      "variables-tab/sub-navigation/selected-item": "Actions"
+    }
   },
   "layoutModel": {
     "rootEditor": {
@@ -198,11 +201,11 @@
               "children": [
                 {
                   "type": "tab",
-                  "id": "#bea926e3-65a5-4ddf-a9df-69df6efc0317",
-                  "name": "Main",
+                  "id": "#94045bd8-ecb6-423d-9f00-c93185c11f61",
+                  "name": "Settings",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[CM1.eez-project]:/userPages/0",
+                    "objectPath": "[CM1.eez-project]:/userPages/1",
                     "permanent": false
                   },
                   "icon": "svg:page"
@@ -1071,6 +1074,36 @@
         "secondToPx": 200,
         "scrollLeft": 0
       }
+    },
+    "[CM1.eez-project]:/userPages/1[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "1": {},
+          "3": {
+            "1": {
+              "0": {
+                "1": {},
+                "2": {},
+                "3": {}
+              }
+            }
+          }
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -512,
+          "y": -300
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
     }
   },
   "activeOutputSection": 0,
@@ -1079,6 +1112,7 @@
   "searchMatchWholeWord": false,
   "replaceEnabled": false,
   "replaceText": "",
+  "pageRuntimeFrontFace": true,
   "breakpoints": {},
   "watchExpressions": [],
   "showComponentDescriptions": true,
@@ -1086,7 +1120,9 @@
   "selectedStylePropertyName": "",
   "lvglPart": "MAIN",
   "lvglState": "DEFAULT",
-  "lvglExpandedPropertiesGroup": [],
+  "lvglExpandedPropertiesGroup": [
+    "LAYOUT"
+  ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
   "flowZoom": 1,

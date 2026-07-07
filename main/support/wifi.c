@@ -104,8 +104,6 @@ void wifiInit(void *args) {
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "wifi_init_sta finished.");
-
     while (1)   {
         EventBits_t bits = xEventGroupWaitBits(wifiEventGroup, 0x00FFFFFF, pdTRUE, pdFALSE, portMAX_DELAY);
         switch (bits)   {
