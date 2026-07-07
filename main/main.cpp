@@ -25,17 +25,19 @@ static EventGroupHandle_t mainEvents;
 static EventBits_t events;
 
 extern "C" void app_main(void) {
+    //esp_log_level_set("*", ESP_LOG_NONE);
     mainEvents=xEventGroupCreate();
+    xEventGroupClearBits(mainEvents, 0x00ffffff);
     bsp_spiffs_mount();
     bsp_display_start_with_config(&cfg);
     bsp_display_brightness_set(100);
     bsp_display_lock(-1);
     ui_init();
     bsp_display_unlock();
-    //wifiSetupConnection("RN11S", "amiga", NULL);
-    //xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
+    wifiSetupConnection("RN11S", "amiga4000", NULL);
+    xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
     while (1)   {
-        events=xEventGroupWaitBits(mainEvents, 0xFFFFFFFF, pdTRUE, pdFALSE, 1);
+        //events=xEventGroupWaitBits(mainEvents, 0x00ffffff, pdTRUE, pdFALSE, 1);
         if (bsp_display_lock(0)) {
             ui_tick();
             bsp_display_unlock();

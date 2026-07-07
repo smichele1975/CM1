@@ -14,12 +14,6 @@ uint32_t wifiGetStatus();
 void wifiSetStatus(uint32_t status);
 void wifiClearStatus(uint32_t status);
 
-void wifiHandleInit(EventBits_t bits);
-void wifiHandleConnecting(EventBits_t bits);
-void wifiHandleConnected(EventBits_t bits);
-void wifiHandleDisconnected(EventBits_t bits);
-void wifiHandleScanning(EventBits_t bits);
-void wifiHandleRunning(EventBits_t bits);
 
 
 #ifdef __cplusplus
