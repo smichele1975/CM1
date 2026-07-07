@@ -21,9 +21,11 @@ static bsp_display_cfg_t  cfg={
     }
 };
 
-EventGroupHandle_t mainEvents;
+static EventGroupHandle_t mainEvents;
+static EventBits_t events;
 
 extern "C" void app_main(void) {
+    mainEvents=xEventGroupCreate();
     bsp_spiffs_mount();
     bsp_display_start_with_config(&cfg);
     bsp_display_brightness_set(100);
@@ -33,7 +35,7 @@ extern "C" void app_main(void) {
     //wifiSetupConnection("RN11S", "amiga", NULL);
     //xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
     while (1)   {
-        xEventGroupWaitBits(mainEvents, 0xFFFFFFFF, pdFALSE, pdFALSE, 0);
+        events=xEventGroupWaitBits(mainEvents, 0xFFFFFFFF, pdTRUE, pdFALSE, 1);
         if (bsp_display_lock(0)) {
             ui_tick();
             bsp_display_unlock();
