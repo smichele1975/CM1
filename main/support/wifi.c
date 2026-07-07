@@ -108,5 +108,13 @@ void wifiInit(void *args) {
 
     while (1)   {
         EventBits_t bits = xEventGroupWaitBits(wifiEventGroup, 0x00FFFFFF, pdTRUE, pdFALSE, portMAX_DELAY);
+        switch (bits)   {
+            case WIFI_CONNECTED_BIT:
+            break;
+            case WIFI_FAIL_BIT:
+            break;
+            default:
+            break;
+        }
     }
 }

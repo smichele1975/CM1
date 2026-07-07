@@ -37,7 +37,7 @@ extern "C" void app_main(void) {
     wifiSetupConnection("RN11S", "amiga4000", NULL);
     xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
     while (1)   {
-        //events=xEventGroupWaitBits(mainEvents, 0x00ffffff, pdTRUE, pdFALSE, 1);
+        events=xEventGroupWaitBits(mainEvents, 0x00ffffff, pdTRUE, pdFALSE, 1);
         if (bsp_display_lock(0)) {
             ui_tick();
             bsp_display_unlock();
