@@ -8,6 +8,8 @@ extern "C" {
 #endif
 
 extern void action_change_brightness(lv_event_t * e);
+extern void action_wifi_scan(lv_event_t * e);
+extern void action_select_ssid(lv_event_t * e);
 
 #ifdef __cplusplus
 }

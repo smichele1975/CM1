@@ -29,10 +29,11 @@ typedef struct _objects_t {
     lv_obj_t *label_bar_1;
     lv_obj_t *version_label_1;
     lv_obj_t *wifi_tab;
-    lv_obj_t *scan;
     lv_obj_t *password_text_area;
     lv_obj_t *ssid_name;
-    lv_obj_t *ssid_text_arrea;
+    lv_obj_t *ssid_text_area;
+    lv_obj_t *sta_scan_list;
+    lv_obj_t *scan;
     lv_obj_t *brightness_slider;
     lv_obj_t *keyboard;
 } objects_t;

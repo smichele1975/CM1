@@ -11,8 +11,6 @@
 static const char *TAG="WIFI";
 static EventGroupHandle_t mainEventGroup;
 
-
-
 static int retryCnt;
 static wifi_ap_record_t    record;
 static uint16_t apNum=32;
@@ -25,6 +23,16 @@ wifi_config_t wifiConfig = {
     }
 };
 
+uint16_t wifiGetAPNum() {
+    esp_wifi_scan_get_ap_num(&apNum);
+    return apNum;
+}
+
+wifi_ap_record_t *wifiGetAPRecord()  {
+    esp_wifi_scan_get_ap_record(&record);
+    return &record;
+}
+
 void wifiSetupConnection(const char *_ssid, const char *_password, const char *_bssid)  {
     strcpy((char *)&wifiConfig.sta.ssid, _ssid);
     strcpy((char *)&wifiConfig.sta.password, _password);
@@ -34,14 +42,16 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 
     if (event_base==WIFI_EVENT)    {
         switch (event_id)   {
+
         case WIFI_EVENT_SCAN_DONE:
             ESP_LOGI(TAG, "Wifi scan done");
-            esp_wifi_scan_get_ap_num(&apNum);
+            xEventGroupSetBits(wifiEventGroup, WIFI_SCAN_DONE);
+            /*esp_wifi_scan_get_ap_num(&apNum);
             while (apNum>0) {
                 esp_wifi_scan_get_ap_record(&record);
                 ESP_LOGI(TAG, "AP: %s, power:%d", record.ssid, record.rssi);
                 apNum--;
-            }
+            }*/
             break;
 
         case WIFI_EVENT_STA_START:
@@ -94,4 +104,8 @@ void wifiInit(EventGroupHandle_t _wifiEventGroup) {
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
     ESP_ERROR_CHECK(esp_wifi_start());
+}
+
+void wifiScan() {
+    esp_wifi_scan_start(NULL, false);
 }

@@ -13,7 +13,7 @@
 objects_t objects;
 
 static const char *screen_names[] = { "Main", "Settings" };
-static const char *object_names[] = { "main", "settings", "top_bar", "bottom_bar", "setting_btn", "label_bar", "version_label", "cancel_btn", "save_btn", "label_bar_1", "version_label_1", "wifi_tab", "scan", "password_text_area", "ssid_name", "ssid_text_arrea", "brightness_slider", "keyboard" };
+static const char *object_names[] = { "main", "settings", "top_bar", "bottom_bar", "setting_btn", "label_bar", "version_label", "cancel_btn", "save_btn", "label_bar_1", "version_label_1", "wifi_tab", "password_text_area", "ssid_name", "ssid_text_area", "sta_scan_list", "scan", "brightness_slider", "keyboard" };
 
 //
 // Event handlers
@@ -29,6 +29,10 @@ static void event_handler_cb_main_setting_btn(lv_event_t *e) {
     if (event == LV_EVENT_PRESSED) {
         e->user_data = (void *)0;
         flowPropagateValueLVGLEvent(flowState, 4, 0, e);
+    }
+    if (event == LV_EVENT_PRESSED) {
+        e->user_data = (void *)0;
+        action_wifi_scan(e);
     }
 }
 
@@ -72,6 +76,28 @@ static void event_handler_cb_settings_password_text_area(lv_event_t *e) {
     
     if (event == LV_EVENT_FOCUSED) {
         e->user_data = (void *)0;
+        flowPropagateValueLVGLEvent(flowState, 17, 0, e);
+    }
+    if (event == LV_EVENT_DEFOCUSED) {
+        e->user_data = (void *)0;
+        flowPropagateValueLVGLEvent(flowState, 17, 1, e);
+    }
+}
+
+static void event_handler_cb_settings_ssid_text_area(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_VALUE_CHANGED) {
+        lv_obj_t *ta = lv_event_get_target(e);
+        if (tick_value_change_obj != ta) {
+            const char *value = lv_textarea_get_text(ta);
+            assignStringProperty(flowState, 20, 3, value, "Failed to assign Text in Textarea widget");
+        }
+    }
+    if (event == LV_EVENT_FOCUSED) {
+        e->user_data = (void *)0;
         flowPropagateValueLVGLEvent(flowState, 20, 0, e);
     }
     if (event == LV_EVENT_DEFOCUSED) {
@@ -80,18 +106,25 @@ static void event_handler_cb_settings_password_text_area(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_settings_ssid_text_arrea(lv_event_t *e) {
+static void event_handler_cb_settings_sta_scan_list(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
     (void)flowState;
     
-    if (event == LV_EVENT_FOCUSED) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 23, 0, e);
+        action_select_ssid(e);
     }
-    if (event == LV_EVENT_DEFOCUSED) {
+}
+
+static void event_handler_cb_settings_scan(lv_event_t *e) {
+    lv_event_code_t event = lv_event_get_code(e);
+    void *flowState = lv_event_get_user_data(e);
+    (void)flowState;
+    
+    if (event == LV_EVENT_CLICKED) {
         e->user_data = (void *)0;
-        flowPropagateValueLVGLEvent(flowState, 23, 1, e);
+        action_wifi_scan(e);
     }
 }
 
@@ -104,7 +137,7 @@ static void event_handler_cb_settings_brightness_slider(lv_event_t *e) {
         lv_obj_t *ta = lv_event_get_target(e);
         if (tick_value_change_obj != ta) {
             int32_t value = lv_slider_get_value(ta);
-            assignIntegerProperty(flowState, 27, 3, value, "Failed to assign Value in Slider widget");
+            assignIntegerProperty(flowState, 29, 3, value, "Failed to assign Value in Slider widget");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
@@ -373,30 +406,6 @@ void create_screen_settings() {
                             {
                                 lv_obj_t *parent_obj = obj;
                                 {
-                                    lv_obj_t *obj = lv_list_create(parent_obj);
-                                    lv_obj_set_pos(obj, 10, 2);
-                                    lv_obj_set_size(obj, 386, 262);
-                                    lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-                                }
-                                {
-                                    // scan
-                                    lv_obj_t *obj = lv_btn_create(parent_obj);
-                                    objects.scan = obj;
-                                    lv_obj_set_pos(obj, 10, 264);
-                                    lv_obj_set_size(obj, 386, 50);
-                                    add_style_button_style(obj);
-                                    {
-                                        lv_obj_t *parent_obj = obj;
-                                        {
-                                            lv_obj_t *obj = lv_label_create(parent_obj);
-                                            lv_obj_set_pos(obj, 0, 0);
-                                            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-                                            lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-                                            lv_label_set_text_static(obj, "Scan");
-                                        }
-                                    }
-                                }
-                                {
                                     lv_obj_t *obj = lv_obj_create(parent_obj);
                                     lv_obj_set_pos(obj, 471, 158);
                                     lv_obj_set_size(obj, 386, 74);
@@ -431,6 +440,8 @@ void create_screen_settings() {
                                             lv_textarea_set_password_mode(obj, true);
                                             lv_obj_add_event_cb(obj, event_handler_cb_settings_password_text_area, LV_EVENT_ALL, flowState);
                                             lv_obj_set_style_text_font(obj, &ui_font_coolvetica_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_obj_set_style_flex_track_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
                                         }
                                     }
                                 }
@@ -461,16 +472,69 @@ void create_screen_settings() {
                                             lv_label_set_text_static(obj, "SSID");
                                         }
                                         {
-                                            // ssidTextArrea
+                                            // ssidTextArea
                                             lv_obj_t *obj = lv_textarea_create(parent_obj);
-                                            objects.ssid_text_arrea = obj;
+                                            objects.ssid_text_area = obj;
                                             lv_obj_set_pos(obj, 972, -167);
                                             lv_obj_set_size(obj, 306, 48);
                                             lv_textarea_set_max_length(obj, 32);
                                             lv_textarea_set_one_line(obj, false);
                                             lv_textarea_set_password_mode(obj, false);
-                                            lv_obj_add_event_cb(obj, event_handler_cb_settings_ssid_text_arrea, LV_EVENT_ALL, flowState);
+                                            lv_obj_add_event_cb(obj, event_handler_cb_settings_ssid_text_area, LV_EVENT_ALL, flowState);
                                             lv_obj_set_style_text_font(obj, &ui_font_coolvetica_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_obj_set_style_layout(obj, LV_LAYOUT_FLEX, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_obj_set_style_flex_track_place(obj, LV_FLEX_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                        }
+                                    }
+                                }
+                                {
+                                    lv_obj_t *obj = lv_obj_create(parent_obj);
+                                    lv_obj_set_pos(obj, 1, 5);
+                                    lv_obj_set_size(obj, 410, 393);
+                                    lv_obj_set_style_pad_left(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_top(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_right(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_pad_bottom(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    lv_obj_set_style_radius(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                    {
+                                        lv_obj_t *parent_obj = obj;
+                                        {
+                                            lv_obj_t *obj = lv_label_create(parent_obj);
+                                            lv_obj_set_pos(obj, 95, 8);
+                                            lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                                            lv_obj_set_style_text_font(obj, &ui_font_coolvetica_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            lv_label_set_text_static(obj, "Available Access Points");
+                                        }
+                                        {
+                                            // staScanList
+                                            lv_obj_t *obj = lv_table_create(parent_obj);
+                                            objects.sta_scan_list = obj;
+                                            lv_obj_set_pos(obj, 10, 38);
+                                            lv_obj_set_size(obj, 386, 290);
+                                            lv_obj_add_event_cb(obj, event_handler_cb_settings_sta_scan_list, LV_EVENT_ALL, flowState);
+                                            lv_obj_set_style_text_font(obj, &ui_font_coolvetica_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                        }
+                                        {
+                                            // scan
+                                            lv_obj_t *obj = lv_btn_create(parent_obj);
+                                            objects.scan = obj;
+                                            lv_obj_set_pos(obj, 9, 328);
+                                            lv_obj_set_size(obj, 386, 50);
+                                            lv_obj_add_event_cb(obj, event_handler_cb_settings_scan, LV_EVENT_ALL, flowState);
+                                            add_style_button_style(obj);
+                                            lv_obj_set_style_bg_color(obj, lv_color_hex(0x663399), LV_PART_MAIN | LV_STATE_DEFAULT);
+                                            {
+                                                lv_obj_t *parent_obj = obj;
+                                                {
+                                                    lv_obj_t *obj = lv_label_create(parent_obj);
+                                                    lv_obj_set_pos(obj, 0, 0);
+                                                    lv_obj_set_size(obj, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+                                                    lv_obj_set_style_align(obj, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+                                                    lv_label_set_text_static(obj, "Scan");
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -531,7 +595,7 @@ void create_screen_settings() {
             // keyboard
             lv_obj_t *obj = lv_keyboard_create(parent_obj);
             objects.keyboard = obj;
-            lv_obj_set_pos(obj, 0, 332);
+            lv_obj_set_pos(obj, 1, 332);
             lv_obj_set_size(obj, 1024, 268);
             lv_obj_add_flag(obj, LV_OBJ_FLAG_HIDDEN);
             lv_obj_set_style_align(obj, LV_ALIGN_DEFAULT, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -545,7 +609,17 @@ void tick_screen_settings() {
     void *flowState = getFlowState(0, 1);
     (void)flowState;
     {
-        int32_t new_val = evalIntegerProperty(flowState, 27, 3, "Failed to evaluate Value in Slider widget");
+        const char *new_val = evalTextProperty(flowState, 20, 3, "Failed to evaluate Text in Textarea widget");
+        const char *cur_val = lv_textarea_get_text(objects.ssid_text_area);
+        uint32_t max_length = lv_textarea_get_max_length(objects.ssid_text_area);
+        if (strncmp(new_val, cur_val, max_length) != 0) {
+            tick_value_change_obj = objects.ssid_text_area;
+            lv_textarea_set_text(objects.ssid_text_area, new_val);
+            tick_value_change_obj = NULL;
+        }
+    }
+    {
+        int32_t new_val = evalIntegerProperty(flowState, 29, 3, "Failed to evaluate Value in Slider widget");
         int32_t cur_val = lv_slider_get_value(objects.brightness_slider);
         if (new_val != cur_val) {
             tick_value_change_obj = objects.brightness_slider;
