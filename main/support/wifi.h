@@ -7,14 +7,16 @@ extern "C"  {
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
 
-void wifiInit(void *args);
+#define MAXIMUM_RETRY 3
+
+#define WIFI_CONNECTED_BIT BIT0
+#define WIFI_FAIL_BIT BIT1
+#define WIFI_STA_READY BIT2
+#define WIFI_REQUEST_CONNECT BIT31
+
+void wifiInit(EventGroupHandle_t _wifiEventGroup);
 
 void wifiSetupConnection(const char *_ssid, const char *_password, const char *_bssid);
-uint32_t wifiGetStatus();
-void wifiSetStatus(uint32_t status);
-void wifiClearStatus(uint32_t status);
-
-
 
 #ifdef __cplusplus
 }

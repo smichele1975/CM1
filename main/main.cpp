@@ -8,7 +8,9 @@
 
 static const char *TAG="MAIN";
 
-static TaskHandle_t wifiTask;
+void handleMainEvents(uint32_t timeout);
+void handleWifiEvents(uint32_t timeout);
+void uiRefresh();
 
 static bsp_display_cfg_t  cfg={
     .lvgl_port_cfg=ESP_LVGL_PORT_INIT_CONFIG(),
@@ -21,12 +23,32 @@ static bsp_display_cfg_t  cfg={
     }
 };
 
-static EventGroupHandle_t mainEvents;
-static EventBits_t bits;
+static EventGroupHandle_t mainEventGroup;
+static EventGroupHandle_t wifiEventGroup;
+static EventBits_t mainBits, wifiBits;
+
+void handleMainEvents(uint32_t timeout) {
+    mainBits=xEventGroupWaitBits(mainEventGroup, 0x00ffffff, pdTRUE, pdFALSE, timeout);
+}
+
+void handleWifiEvents(uint32_t timeout) {
+    wifiBits=xEventGroupWaitBits(wifiEventGroup, 0x00ffffff, pdTRUE, pdFALSE, timeout);
+    if (wifiBits&WIFI_CONNECTED_BIT)  {
+    }
+    if (wifiBits&WIFI_FAIL_BIT) {
+    }
+}
+
+void uiRefresh()    {
+if (bsp_display_lock(0)) {
+    ui_tick();
+    bsp_display_unlock();
+}
 
 extern "C" void app_main(void) {
     //esp_log_level_set("*", ESP_LOG_NONE);
-    mainEvents=xEventGroupCreate();
+    mainEventGroup=xEventGroupCreate();
+    wifiEventGroup=xEventGroupCreate();
     bsp_spiffs_mount();
     bsp_display_start_with_config(&cfg);
     bsp_display_brightness_set(100);
@@ -34,13 +56,11 @@ extern "C" void app_main(void) {
     ui_init();
     bsp_display_unlock();
     wifiSetupConnection("RN11S", "amiga4000", NULL);
-    xTaskCreatePinnedToCore(wifiInit, "WIFI Task", 4096, xTaskGetCurrentTaskHandle(), 1, &wifiTask, 1);
+    wifiInit(wifiEventGroup);
     while (1)   {
-        bits=xEventGroupWaitBits(mainEvents, 0x00ffffff, pdTRUE, pdFALSE, 0);
-        if (bsp_display_lock(0)) {
-            ui_tick();
-            bsp_display_unlock();
-        }
+        handleMainEvents(0);
+        handleWifiEvents(0);
+        uiRefresh();
         vTaskDelay(pdMS_TO_TICKS(1));
     }
 }

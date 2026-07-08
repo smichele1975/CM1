@@ -9,19 +9,14 @@
 #include <esp_log.h>
 
 static const char *TAG="WIFI";
-static TaskHandle_t mainTask;
+static EventGroupHandle_t mainEventGroup;
 
-#define MAXIMUM_RETRY 3
 
-#define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT BIT1
-#define WIFI_STA_READY BIT2
-#define WIFI_REQUEST_CONNECT BIT31
 
-static EventGroupHandle_t wifiEventGroup;
 static int retryCnt;
 static wifi_ap_record_t    record;
 static uint16_t apNum=32;
+static EventGroupHandle_t wifiEventGroup;
 
 wifi_config_t wifiConfig = {
     .sta={
@@ -30,13 +25,13 @@ wifi_config_t wifiConfig = {
     }
 };
 
-
 void wifiSetupConnection(const char *_ssid, const char *_password, const char *_bssid)  {
     strcpy((char *)&wifiConfig.sta.ssid, _ssid);
     strcpy((char *)&wifiConfig.sta.password, _password);
 }
 
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
+
     if (event_base==WIFI_EVENT)    {
         switch (event_id)   {
         case WIFI_EVENT_SCAN_DONE:
@@ -50,12 +45,10 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
             break;
 
         case WIFI_EVENT_STA_START:
-            //xEventGroupSetBits(wifiEventGroup, WIFI_STA_READY);
             ESP_ERROR_CHECK(esp_wifi_connect());
             break;
 
         case WIFI_EVENT_STA_DISCONNECTED:
-            //wifiClearStatus(WS_CONNECTED_BIT);
             if (retryCnt<MAXIMUM_RETRY) {
                 ESP_ERROR_CHECK(esp_wifi_connect());
                 retryCnt++;
@@ -78,8 +71,8 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
-void wifiInit(void *args) {
-    mainTask=(TaskHandle_t)args;
+void wifiInit(EventGroupHandle_t _wifiEventGroup) {
+    wifiEventGroup=_wifiEventGroup;
     esp_err_t ret=nvs_flash_init();
     if (ret==ESP_ERR_NVS_NO_FREE_PAGES||ret==ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -87,7 +80,6 @@ void wifiInit(void *args) {
     }
     ESP_ERROR_CHECK(ret);
 
-    wifiEventGroup=xEventGroupCreate();
     ESP_LOGI(TAG, "Netif init");
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -99,20 +91,7 @@ void wifiInit(void *args) {
     esp_event_handler_instance_t instance_got_ip;
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL, &instance_any_id));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL, &instance_got_ip));
-
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifiConfig));
     ESP_ERROR_CHECK(esp_wifi_start());
-
-    while (1)   {
-        EventBits_t bits = xEventGroupWaitBits(wifiEventGroup, 0x00FFFFFF, pdTRUE, pdFALSE, portMAX_DELAY);
-        switch (bits)   {
-            case WIFI_CONNECTED_BIT:
-            break;
-            case WIFI_FAIL_BIT:
-            break;
-            default:
-            break;
-        }
-    }
 }
